@@ -1,0 +1,54 @@
+services:
+  database:
+    container_name: "database"
+    image: "postgres:17.4-alpine"
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - "./backend/envs/postgres.env"
+    volumes:
+      - database_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo 'SELECT 1;' | psql -U postgres -h localhost -p 5432"]
+      interval: 1s
+      timeout: 1s
+      retries: 10
+    networks:
+      - web_proxy
+
+  backend:
+    container_name: "backend"
+    image: "backend:dev"
+    build:
+      context: "./backend"
+      dockerfile: "Dockerfile"
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+    - "8000:8000"
+    volumes:
+    - ./backend:/usr/src/backend
+    networks:
+      - web_proxy
+
+  proxy:
+    container_name: "proxy"
+    image: "proxy:dev"
+    build:
+      context: "./web_proxy"
+      dockerfile: "Dockerfile"
+    ports:
+      - '8080:80'
+    networks:
+      - web_proxy
+    depends_on:
+      - backend
+
+networks:
+  web_proxy:
+    driver: bridge
+
+volumes:
+  database_volume:
