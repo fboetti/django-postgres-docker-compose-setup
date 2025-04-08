@@ -1,14 +1,34 @@
-if __name__ == "__main__":
-    # Run django migrations ('python manage.py migrate') 
-    # and runserver command ('python manage.py runserver')
-    import os
-    import sys
+import os
+import typer
 
-    # Set the default settings module for the 'django' program.
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_setup.settings")
-    # Add the project directory to the Python path.
-    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    # Import the Django management module.
-    # Execute the command line arguments.
-    os.system("python manage.py migrate")
-    os.system("python manage.py runserver 0.0.0.0:8000")
+from utils.startup import run_django_server
+
+typer_app = typer.Typer()
+
+
+@typer_app.command()
+def run_migrations(
+    make: bool = False,
+    migrate: bool = False,
+) -> None:
+    """
+    Run the Django migrations.
+    """
+    if make:
+        print("🛠️ Making migrations...")
+        os.system("python manage.py makemigrations")
+    if migrate:
+        print("🚀 Running migrations...")
+        os.system("python manage.py migrate")
+
+
+@typer_app.command()
+def run_server(
+    migrate: bool = False,
+) -> None:
+    print("🚀 Starting backend...")
+    run_django_server(migrate=migrate)
+
+
+if __name__ == "__main__":
+    typer_app()

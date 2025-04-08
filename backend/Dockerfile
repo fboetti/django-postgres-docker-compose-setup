@@ -13,3 +13,5 @@ EXPOSE 8000
 WORKDIR /usr/src/backend/src
 
 ENTRYPOINT ["python", "run.py"]
+
+CMD ["run-server", "--migrate"]

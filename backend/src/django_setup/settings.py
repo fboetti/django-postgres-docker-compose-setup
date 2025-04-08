@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Custom Apps
+    'polls.apps.PollsConfig',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +84,20 @@ DATABASES = {
         'HOST': 'database',
         'PORT': '5432',
     },
+    'polls': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'database',
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=polls,public',
+        }
+    },
 }
+
+DATABASE_ROUTERS = ['django_setup.database_routers.SchemaRouter']
 
 
 # Password validation
