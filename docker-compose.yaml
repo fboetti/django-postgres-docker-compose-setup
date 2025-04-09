@@ -26,6 +26,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    environment:
+      - RUNNING_MODE=docker
     ports:
     - "8000:8000"
     volumes:
